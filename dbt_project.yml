@@ -3,7 +3,7 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 name: 'dbt_tpch'
-version: '1.0'
+version: '1.0.0'
 config-version: 2
 profile: 'default'
 
@@ -13,23 +13,10 @@ test-paths: ["tests"]
 data-paths: ["data"]
 macro-paths: ["macros"]
 
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
-    - "target"
-    - "dbt_modules"
-    - "dbt_packages"
 
-profile: dbt-tpch
-
-require-dbt-version: ">=0.13.1"
-
-quoting:
-    database: false
-    identifier: false
-    schema: false
 
 models:
-  dbt-tpch:
+  dbt_tpch:
 
       vars:
         max_ship_date: '1998-12-01'
