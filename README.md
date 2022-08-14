@@ -65,9 +65,9 @@ sources:
 ...
 
 ```
-## Snowflake Usage
+## Databricks
 
-Using an X-Small warehouse (1 credit / hour), the project currently runs in about *5 minutes* against the `TPCH_SF10` database.
+Using an X-Small warehouse (1 credit / hour), the project currently runs in about *5 minutes* against the `TPCH` database.
 
 ---
 - [What is dbt](https://dbt.readme.io/docs/overview)?
