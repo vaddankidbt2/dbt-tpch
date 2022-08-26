@@ -1,6 +1,8 @@
 {{
     config(
-        materialized = 'table'
+        materialized = 'table',
+        schema='wh',
+        file_format='delta'
     )
 }}
 with orders_items as (

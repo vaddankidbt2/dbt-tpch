@@ -1,6 +1,8 @@
 {{
     config(
-        materialized = 'table'
+        materialized = 'table',
+        schema='ods',
+        file_format='delta'
     )
 }}
 with parts as (
