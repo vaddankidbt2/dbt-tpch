@@ -1,5 +1,4 @@
 {% macro current_timestamp() -%}
-  {% do dbt_utils.xdb_deprecation_warning_without_replacement('current_timestamp', model.package_name, model.name) %}
   {{ return(adapter.dispatch('current_timestamp', 'dbt_utils')()) }}
 {%- endmacro %}
 
@@ -18,7 +17,6 @@
 
 
 {% macro current_timestamp_in_utc() -%}
-  {% do dbt_utils.xdb_deprecation_warning_without_replacement('current_timestamp_in_utc', model.package_name, model.name) %}
   {{ return(adapter.dispatch('current_timestamp_in_utc', 'dbt_utils')()) }}
 {%- endmacro %}
 
