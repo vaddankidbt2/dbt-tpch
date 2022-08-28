@@ -2,7 +2,7 @@ version: 2
 
 models:
     - name : orders
-      description : This is a Orders Table
+      description : This is a Orders Table  
 
       columns:
         - name: order_key
@@ -16,3 +16,8 @@ models:
           tests:
             - accepted_values:
                 values: ['F', 'O','P']
+      tests:
+        - dbt_expectations.expect_table_row_count_to_equal_other_table:
+            compare_model: ref('base_orders')                    
+
+    
