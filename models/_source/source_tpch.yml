@@ -2,8 +2,8 @@ version: 2
 
 sources:
   - name: tpch
-    database: SNOWFLAKE_SAMPLE_DATA
-    schema: TPCH_SF10
+    database: default
+    schema: tpch
     loader: Databricks
     
     quoting:
