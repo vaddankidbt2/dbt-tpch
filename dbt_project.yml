@@ -3,7 +3,7 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 name: 'dbt_tpch'
-version: '1.0'
+version: '2.0'
 
 source-paths: ["models"]
 analysis-paths: ["analysis"] 
