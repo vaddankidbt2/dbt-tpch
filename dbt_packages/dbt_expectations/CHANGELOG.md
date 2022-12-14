@@ -1,3 +1,37 @@
+# dbt-expectations v0.8.0
+
+## Breaking Changes
+NOTE: including this package in your project will no longer auto-include `dbt-utils`!
+* Remove references to dbt_utils by @clausherther in https://github.com/calogica/dbt-expectations/pull/217
+
+# dbt-expectations v0.7.0
+
+## Breaking Changes
+* Fix boolean logic in `expect_compound_columns_to_be_unique` `ignore_row_if`  by @clausherther in https://github.com/calogica/dbt-expectations/pull/202
+  * Fixed issue https://github.com/calogica/dbt-expectations/issues/200 raised by @mcannamela
+* Refactor ignore_row_if logic by @clausherther in https://github.com/calogica/dbt-expectations/pull/204
+
+## Under The Hood
+* Add SQL Fluff support by @clausherther in https://github.com/calogica/dbt-expectations/pull/198
+
+# dbt-expectations v0.6.1
+
+## New Features
+* Add expect_column_distinct_count_to_be_less_than.sql by @dylanrigal in https://github.com/calogica/dbt-expectations/pull/193
+* Add group_by option to expect_column_values_to_be_within_n_moving_stdevs by @clausherther in https://github.com/calogica/dbt-expectations/pull/182
+
+## Fixes
+* Add option to escape raw strings in RegEx functions by @clausherther in https://github.com/calogica/dbt-expectations/pull/191
+
+## New Contributors
+* @dylanrigal made their first contribution in https://github.com/calogica/dbt-expectations/pull/193
+
+# dbt-expectations v0.6.0
+
+## Breaking Changes
+* Requires dbt 1.2.x (via https://github.com/calogica/dbt-expectations/pull/189)
+* Migrate to dbt-utils 0.9.0 and dbt-date 0.6.0 by @clausherther in https://github.com/calogica/dbt-expectations/pull/189
+
 # dbt-expectations v0.5.8
 
 ## Fixes

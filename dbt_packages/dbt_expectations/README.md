@@ -8,13 +8,19 @@
 
 ## Featured Sponsors ❤️
 
-Development of `dbt-expectations` (and `dbt-date`) is funded by our amazing [sponsors](https://github.com/sponsors/calogica), including our featured sponsors:
+Development of `dbt-expectations` (and `dbt-date`) is funded by our amazing [sponsors](https://github.com/sponsors/calogica), including our **featured** sponsors:
 
-<a href="https://www.lightdash.com/" target="_blank"><img src=".sponsors/lightdash.jpg"/></a>
+### aggua (<a href="https://www.aggua.io/" target="_blank">www.aggua.io</a>)
+
+<a href="https://www.aggua.io/" target="_blank"><img width="80%" src="https://uploads-ssl.webflow.com/628f445aa439cdd1dfb160c0/62b4295accb569ec87d751a5_aggua-logo.svg"/></a>
+
+### re_data (<a href="https://www.getre.io/" target="_blank">www.getre.io</a>)
+
+<a href="https://www.getre.io/" target="_blank"><img width="30%" src="https://uploads-ssl.webflow.com/60bdbc7b0c4f5aa1568dc8cc/60df3224a3b3637230f335d6_REDATA%20LOGO%2011.svg"/></a>
 
 ## Install
 
-`dbt-expectations` currently supports `dbt 1.0.x`.
+`dbt-expectations` currently supports `dbt 1.2.x` or higher.
 
 Check [dbt Hub](https://hub.getdbt.com/calogica/dbt_expectations/latest/) for the latest installation instructions, or [read the docs](https://docs.getdbt.com/docs/package-management) for more information on installing packages.
 
@@ -23,7 +29,7 @@ Include in `packages.yml`
 ```yaml
 packages:
   - package: calogica/dbt_expectations
-    version: [">=0.5.0", "<0.6.0"]
+    version: [">=0.7.0", "<0.8.0"]
     # <see https://github.com/calogica/dbt-expectations/releases/latest> for the latest version tag
 ```
 
@@ -31,23 +37,7 @@ For latest release, see [https://github.com/calogica/dbt-expectations/releases](
 
 ### Dependencies
 
-This package includes a reference to [`dbt-date`](https://github.com/calogica/dbt-date) which in turn references [`dbt-utils`](https://github.com/dbt-labs/dbt-utils) so there's no need to also import dbt-utils in your local project.
-
-Note: we no longer include `spark_utils` in this package to avoid versioning conflicts. If you are running this package on non-core platforms (outside of Snowflake, BigQuery, Redshift, Postgres), you will need to use a package like `spark_utils` to shim macros.
-
-For example, in `packages.yml`, you will need to include the relevant package:
-
-```yaml
-  - package: dbt-labs/spark_utils
-    version: <latest or range>
-```
-
-And reference in the dispatch list for `dbt_utils` in `dbt_project.yml`:
-
-```yaml
-vars:
-    dbt_utils_dispatch_list: [spark_utils]
-```
+This package includes a reference to [`dbt-date`](https://github.com/calogica/dbt-date), so there's no need to also import `dbt-date` in your local project.
 
 ### Variables
 
@@ -113,6 +103,7 @@ For example, use `America/New_York` for East Coast Time.
 ### Aggregate functions
 
 - [expect_column_distinct_count_to_be_greater_than](#expect_column_distinct_count_to_be_greater_than)
+- [expect_column_distinct_count_to_be_less_than](#expect_column_distinct_count_to_be_less_than)
 - [expect_column_distinct_count_to_equal_other_table](#expect_column_distinct_count_to_equal_other_table)
 - [expect_column_distinct_count_to_equal](#expect_column_distinct_count_to_equal)
 - [expect_column_distinct_values_to_be_in_set](#expect_column_distinct_values_to_be_in_set)
@@ -342,7 +333,7 @@ Expect the number of rows in a model to match another model times a preconfigure
 models: # or seeds:
   - name: my_model
     tests:
-    - dbt_expectations.expect_table_column_count_to_equal_other_table_times_factor:
+    - dbt_expectations.expect_table_row_count_to_equal_other_table_times_factor:
         compare_model: ref("other_model")
         factor: 13
         row_condition: "id is not null" # (Optional)
@@ -545,6 +536,7 @@ tests:
 ### [expect_column_values_to_match_regex](macros/schema_tests/string_matching/expect_column_values_to_match_regex.sql)
 
 Expect column entries to be strings that match a given regular expression. Valid matches can be found anywhere in the string, for example "[at]+" will identify the following strings as expected: "cat", "hat", "aa", "a", and "t", and the following strings as unexpected: "fish", "dog".
+Optionally, `is_raw` indicates the `regex` pattern is a "raw" string and should be escaped. The default is `False`.
 
 *Applies to:* Column
 
@@ -553,11 +545,13 @@ tests:
   - dbt_expectations.expect_column_values_to_match_regex:
       regex: "[at]+"
       row_condition: "id is not null" # (Optional)
+      is_raw: True # (Optional)
 ```
 
 ### [expect_column_values_to_not_match_regex](macros/schema_tests/string_matching/expect_column_values_to_not_match_regex.sql)
 
 Expect column entries to be strings that do NOT match a given regular expression. The regex must not match any portion of the provided string. For example, "[at]+" would identify the following strings as expected: "fish”, "dog”, and the following as unexpected: "cat”, "hat”.
+Optionally, `is_raw` indicates the `regex` pattern is a "raw" string and should be escaped. The default is `False`.
 
 *Applies to:* Column
 
@@ -566,11 +560,13 @@ tests:
   - dbt_expectations.expect_column_values_to_not_match_regex:
       regex: "[at]+"
       row_condition: "id is not null" # (Optional)
+      is_raw: True # (Optional)
 ```
 
 ### [expect_column_values_to_match_regex_list](macros/schema_tests/string_matching/expect_column_values_to_match_regex_list.sql)
 
 Expect the column entries to be strings that can be matched to either any of or all of a list of regular expressions. Matches can be anywhere in the string.
+Optionally, `is_raw` indicates the `regex` patterns are "raw" strings and should be escaped. The default is `False`.
 
 *Applies to:* Column
 
@@ -580,11 +576,13 @@ tests:
       regex_list: ["@[^.]*", "&[^.]*"]
       match_on: any # (Optional. Default is 'any', which applies an 'OR' for each regex. If 'all', it applies an 'AND' for each regex.)
       row_condition: "id is not null" # (Optional)
+      is_raw: True # (Optional)
 ```
 
 ### [expect_column_values_to_not_match_regex_list](macros/schema_tests/string_matching/expect_column_values_to_not_match_regex_list.sql)
 
 Expect the column entries to be strings that do not match any of a list of regular expressions. Matches can be anywhere in the string.
+Optionally, `is_raw` indicates the `regex` patterns are "raw" strings and should be escaped. The default is `False`.
 
 *Applies to:* Column
 
@@ -594,6 +592,7 @@ tests:
       regex_list: ["@[^.]*", "&[^.]*"]
       match_on: any # (Optional. Default is 'any', which applies an 'OR' for each regex. If 'all', it applies an 'AND' for each regex.)
       row_condition: "id is not null" # (Optional)
+      is_raw: True # (Optional)
 ```
 
 ### [expect_column_values_to_match_like_pattern](macros/schema_tests/string_matching/expect_column_values_to_match_like_pattern.sql)
@@ -674,6 +673,21 @@ Expect the number of distinct column values to be greater than a given value.
 ```yaml
 tests:
   - dbt_expectations.expect_column_distinct_count_to_be_greater_than:
+      value: 10
+      quote_values: false # (Optional. Default is 'false'.)
+      group_by: [group_id, other_group_id, ...] # (Optional)
+      row_condition: "id is not null" # (Optional)
+```
+
+### [expect_column_distinct_count_to_be_less_than](macros/schema_tests/aggregate_functions/expect_column_less_count_to_be_less_than.sql)
+
+Expect the number of distinct column values to be less than a given value.
+
+*Applies to:* Column
+
+```yaml
+tests:
+  - dbt_expectations.expect_column_distinct_count_to_be_less_than:
       value: 10
       quote_values: false # (Optional. Default is 'false'.)
       group_by: [group_id, other_group_id, ...] # (Optional)
@@ -987,6 +1001,11 @@ tests:
       row_condition: "id is not null" # (Optional)
 ```
 
+Note:
+
+- `all_values_are_missing` (default) means that rows are excluded where *all* of the test columns are `null`
+- `any_value_is_missing` means that rows are excluded where *either* of the test columns are `null`
+
 ### [expect_multicolumn_sum_to_equal](macros/schema_tests/multi-column/expect_multicolumn_sum_to_equal.sql)
 
 Expects that sum of all rows for a set of columns is equal to a specific value
@@ -1017,9 +1036,16 @@ tests:
       row_condition: "id is not null" # (Optional)
 ```
 
+Note:
+
+- `all_values_are_missing` (default) means that rows are excluded where *all* of the test columns are `null`
+- `any_value_is_missing` means that rows are excluded where *either* of the test columns are `null`
+
 ### [expect_column_values_to_be_within_n_moving_stdevs](macros/schema_tests/distributional/expect_column_values_to_be_within_n_moving_stdevs.sql)
 
-Expects changes in metric values to be within Z sigma away from a moving average, taking the (optionally logged) differences of an aggregated metric value and comparing it to its value N days ago.
+A simple anomaly test based on the assumption that differences between periods in a given time series follow a log-normal distribution.
+Thus, we would expect the logged differences (vs N periods ago) in metric values to be within Z sigma away from a moving average.
+By applying a list of columns in the `group_by` parameter, you can also test for deviations within a group.
 
 *Applies to:* Column
 
@@ -1035,7 +1061,8 @@ tests:
       take_logs: true # (Optional. Default is 'true')
       sigma_threshold_upper: x # (Optional. Replace 'x' with a value. Default is 'None')
       sigma_threshold_lower: y # (Optional. Replace 'y' with a value. Default is 'None')
-      take_diffs: true # (Optional)
+      take_diffs: true # (Optional. Default is 'true')
+      group_by: [group_id] # (Optional. Default is 'None')
 ```
 
 ### [expect_column_values_to_be_within_n_stdevs](macros/schema_tests/distributional/expect_column_values_to_be_within_n_stdevs.sql)
@@ -1047,7 +1074,7 @@ Expects (optionally grouped & summed) metric values to be within Z sigma away fr
 ```yaml
 tests:
   - dbt_expectations.expect_column_values_to_be_within_n_stdevs:
-      group_by: date_day # (Optional. Default is 'None')
+      group_by: group_id # (Optional. Default is 'None')
       sigma_threshold: 3 # (Optional. Default is 3)
 ```
 
@@ -1091,10 +1118,10 @@ or, for example:
 ```yaml
     date_part: day
     test_start_date: '2021-05-01'
-    test_end_date: '{{ modules.datetime.date.today() - modules.datetime.timedelta(1)) }}'
+    test_end_date: '{{ modules.datetime.date.today() - modules.datetime.timedelta(1) }}'
 ```
 
-Unfortunately, you currently **cannot** use a dynamic SQL date, such as `current_date` or macro from a dbt package such as dbt-date, as the underlying `dbt_utils.date_spine` expects a date literal.
+Unfortunately, you currently **cannot** use a dynamic SQL date, such as `current_date` or macro from a dbt package such as dbt-date, as the underlying `date_spine` macro expects a date literal.
 
 The `interval` argument will optionally group `date_part` by a given integer to test data presence at a lower granularity, e.g. adding `interval: 7` to the example above will test whether a model has data for each 7-`day` period instead of for each `day`.
 

@@ -9,6 +9,7 @@
         "`column_list` must be specified as a list of columns. Got: '" ~ column_list ~"'.'"
     ) }}
 {% endif %}
+
 {% if not quote_columns %}
     {%- set columns=column_list %}
 {% elif quote_columns %}
@@ -24,23 +25,12 @@
 
 {%- set row_condition_ext -%}
 
-{%- if row_condition  %}
+    {%- if row_condition  %}
     {{ row_condition }} and
-{% endif -%}
+    {% endif -%}
 
-{%- if ignore_row_if == "all_values_are_missing" %}
-        (
-            {% for column in columns -%}
-            {{ column }} is not null{% if not loop.last %} and {% endif %}
-            {% endfor %}
-        )
-{%- elif ignore_row_if == "any_value_is_missing" %}
-        (
-            {% for column in columns -%}
-            {{ column }} is not null{% if not loop.last %} or {% endif %}
-            {% endfor %}
-        )
-{%- endif -%}
+    {{ dbt_expectations.ignore_row_if_expression(ignore_row_if, columns) }}
+
 {%- endset -%}
 
 with validation_errors as (

@@ -23,30 +23,34 @@
 with latest_grouped_timestamps as (
 
     select
-        {%- for g in group_by %}
-        {{ g }},
-        {%- endfor %}
+        {{ group_by | join(",") ~ "," if group_by }}
         max(1) as join_key,
-        max(cast({{ timestamp_column }} as {{ dbt_utils.type_timestamp() }})) as latest_timestamp_column
+        max(cast({{ timestamp_column }} as {{ type_timestamp() }})) as latest_timestamp_column
     from
         {{ model }}
     where
         -- to exclude erroneous future dates
-        cast({{ timestamp_column }} as {{ dbt_utils.type_timestamp() }}) <= {{ dbt_date.now() }}
+        cast({{ timestamp_column }} as {{ type_timestamp() }}) <= {{ dbt_date.now() }}
         {% if row_condition %}
         and {{ row_condition }}
         {% endif %}
 
-    {{ dbt_utils.group_by(group_by | length )}}
-
+    {% if group_by -%}
+    {{  dbt_expectations.group_by(group_by | length) }}
+    {%- endif %}
 ),
 total_row_counts as (
 
     select
+        {{ group_by | join(",") ~ "," if group_by }}
         max(1) as join_key,
         count(*) as row_count
     from
         latest_grouped_timestamps
+    {% if group_by -%}
+    {{  dbt_expectations.group_by(group_by | length) }}
+    {%- endif %}
+
 
 ),
 outdated_grouped_timestamps as (
@@ -58,8 +62,8 @@ outdated_grouped_timestamps as (
         -- are the max timestamps per group older than the specified cutoff?
         latest_timestamp_column <
             cast(
-                {{ dbt_utils.dateadd(datepart, interval * -1, dbt_date.now()) }}
-                as {{ dbt_utils.type_timestamp() }}
+                {{ dateadd(datepart, interval * -1, dbt_date.now()) }}
+                as {{ type_timestamp() }}
             )
 
 ),
@@ -72,7 +76,11 @@ validation_errors as (
         total_row_counts r
         left join
         outdated_grouped_timestamps t
-        on r.join_key = t.join_key
+        on
+            {% for g in group_by %}
+            r.{{ g }} = t.{{ g }} and
+            {% endfor %}
+            r.join_key = t.join_key
     where
         -- fail if either no rows were returned due to row_condition,
         -- or the recency test returned failed rows
