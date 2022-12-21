@@ -31,21 +31,7 @@ tpch:
             warehouse: <warehouse>
             schema: <default_schema>
 
-        dev:
-            type: snowflake
-            threads: 8
-            account: <account>
-            user: <user>
-            password: <password>
-            role: <role>
-            database: <target_database>
-            warehouse: <snowflake_warehouse>
-            schema: <default_schema>
 ```
-
-## Packages
-
-This project make use of the [dbt_utils](https://github.com/dbt_labs/dbt-utils) package, so you will need to call `dbt deps` before running any model to ensure dbt can combile all package macros.
 
 
 ## Scaling Factor
@@ -69,10 +55,5 @@ sources:
 
 Using an X-Small warehouse (1 credit / hour), the project currently runs in about *5 minutes* against the `TPCH` database.
 
----
-- [What is dbt](https://dbt.readme.io/docs/overview)?
-- Read the [dbt viewpoint](https://dbt.readme.io/docs/viewpoint)
-- [Installation](https://dbt.readme.io/docs/installation)
-- Join the [chat](http://ac-slackin.herokuapp.com/) on Slack for live questions and support.
 
 ---
